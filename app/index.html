@@ -1,0 +1,813 @@
+<title>Trench Partners</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap">
+<style>
+/* Layout: navy shield header with tab bar; each view opens with a one-line "what this is" strip; matchmaker = player rail + main; leaderboard = ranked list; directory = filters + card grid */
+:root {
+  --brand: #013369;        /* NFL navy */
+  --brand-ink: #ffffff;
+  --hot: #d50a0a;          /* NFL red */
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --ink: #0b1630;
+  --muted: #536079;
+  --line: #d9e0ec;
+  --accent: #013369;
+  --accent-soft: #e5ecf7;
+  --field: #eef3ec;
+  --field-line: #c9d6c5;
+  --good: #0b7a45;
+  --bad: #c20b0b;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --track: #e8ecf3;
+  --display: "Saira Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Barlow", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand: #013369; --brand-ink: #ffffff; --hot: #ff4a4a;
+    --bg: #07101f; --surface: #0f1a2e; --ink: #edf1f8; --muted: #9ba7bf; --line: #23314c;
+    --accent: #8db0f2; --accent-soft: #172744; --field: #12221c; --field-line: #2a4236;
+    --good: #4cc98a; --bad: #ff7a6e; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --track: #1b2740; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --brand: #013369; --brand-ink: #ffffff; --hot: #ff4a4a;
+  --bg: #07101f; --surface: #0f1a2e; --ink: #edf1f8; --muted: #9ba7bf; --line: #23314c;
+  --accent: #8db0f2; --accent-soft: #172744; --field: #12221c; --field-line: #2a4236;
+  --good: #4cc98a; --bad: #ff7a6e; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --track: #1b2740; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--brand); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--hot); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.num { font-variant-numeric: tabular-nums; }
+p { margin: 0; }
+
+/* header */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--brand); color: var(--brand-ink); border-bottom: 4px solid var(--hot); }
+header .wrap { display: flex; align-items: stretch; gap: 18px; padding-block: 8px 0; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border: 0; background: none; color: inherit; cursor: pointer; text-align: left; }
+.shield { width: 30px; height: 34px; flex: none; }
+.brand b { display: block; font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: .03em; text-transform: uppercase; line-height: 1; }
+.brand small { display: block; font-size: 12px; opacity: .8; }
+nav { margin-left: auto; display: flex; gap: 2px; flex-wrap: wrap; align-items: flex-end; }
+nav button { border: 0; background: transparent; color: var(--brand-ink); padding: 6px 14px 9px; cursor: pointer; text-align: left; border-radius: 8px 8px 0 0; opacity: .78; }
+nav button b { display: block; font-family: var(--display); font-size: 17px; letter-spacing: .03em; text-transform: uppercase; line-height: 1.1; }
+nav button span { display: block; font-size: 12px; }
+nav button:hover { opacity: 1; background: rgb(255 255 255 / .08); }
+nav button[aria-current="page"] { opacity: 1; background: var(--hot); }
+
+main .wrap { padding-block: 20px 56px; }
+h1, h2, h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0; text-wrap: balance; line-height: 1.05; }
+h2 { font-size: 24px; }
+h3 { font-size: 17px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--hot); }
+.muted { color: var(--muted); }
+.intro { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; }
+.intro h2 { font-size: 20px; }
+.intro p { color: var(--muted); max-width: 80ch; margin-top: 2px; }
+.intro .link { margin-left: auto; white-space: nowrap; align-self: center; }
+
+/* photos */
+.ph { flex: none; border-radius: 50%; overflow: hidden; background: var(--track); display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700; color: var(--muted); border: 2px solid var(--surface); }
+.ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stack { display: flex; }
+.stack .ph + .ph { margin-left: -14px; }
+
+/* shared controls */
+.seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--track); border-radius: 8px; padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .14); }
+input[type="search"], select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.link { border: 0; background: none; color: var(--accent); font-weight: 700; cursor: pointer; padding: 0; }
+.btn { border: 0; background: var(--hot); color: #fff; font-weight: 700; border-radius: 999px; padding: 9px 18px; cursor: pointer; }
+.star { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.star[aria-pressed="true"] { background: #f5c242; border-color: #d9a520; color: #2b2000; }
+.empty { padding: 36px 20px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; }
+
+/* home */
+.home-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; padding-block: 10px 26px; }
+.home-hero h1 { font-size: clamp(36px, 6vw, 60px); }
+.home-hero h1 em { font-style: normal; color: var(--hot); }
+.home-hero p.lead { font-size: 17px; color: var(--muted); max-width: 58ch; margin-top: 12px; }
+.example { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+.example .big { font-family: var(--display); font-size: 44px; font-weight: 800; line-height: 1; }
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.tool { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--brand); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; text-align: left; cursor: pointer; }
+.tool:hover { border-top-color: var(--hot); }
+.tool h3 { font-size: 21px; }
+.tool .who { font-size: 13px; font-weight: 600; color: var(--muted); }
+.tool .go { color: var(--accent); font-weight: 700; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; counter-reset: s; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.step::before { counter-increment: s; content: counter(s); font-family: var(--display); font-weight: 800; font-size: 28px; color: var(--hot); line-height: 1; }
+.step p { color: var(--muted); font-size: 14px; }
+.gloss { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; margin: 0; }
+.gloss div { border-top: 1px solid var(--line); padding-top: 8px; }
+.gloss dt { font-weight: 700; }
+.gloss dd { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.block { margin-top: 30px; display: grid; gap: 14px; }
+
+/* matchmaker */
+.mm { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.rail-top { padding: 12px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+.rail-top .seg { display: grid; }
+.rail-top label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.plist { max-height: calc(100vh - 300px); overflow-y: auto; }
+.prow { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--line); }
+.prow:hover { background: var(--accent-soft); }
+.prow[aria-selected="true"] { background: var(--accent-soft); box-shadow: inset 4px 0 0 var(--hot); }
+.prow b { display: block; font-weight: 600; }
+.prow span { font-size: 13px; color: var(--muted); }
+.prow .rate { margin-left: auto; font-weight: 700; font-size: 13px; color: var(--ink); }
+
+.hero { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-size: 40px; margin: 2px 0 6px; }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 14px; }
+.facts b { color: var(--ink); font-weight: 600; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; min-width: 92px; }
+.chip .v { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.1; }
+.chip .l { font-size: 12px; color: var(--muted); }
+
+.section { margin-top: 22px; display: grid; gap: 12px; }
+.section-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.mcard { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; cursor: pointer; display: grid; gap: 10px; align-content: start; }
+.mcard:hover { border-color: var(--accent); }
+.mcard[aria-pressed="true"] { border-color: var(--hot); box-shadow: 0 0 0 2px var(--hot); }
+.mcard .top { display: flex; align-items: center; gap: 10px; }
+.rank { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--muted); }
+.mcard .names { font-weight: 600; line-height: 1.3; }
+.mcard .big { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1; }
+.mcard .row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.mcard .cta { font-size: 13px; font-weight: 700; color: var(--accent); }
+.lift { font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+.lift.neg { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+
+.detail { margin-top: 24px; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--hot); border-radius: 12px; padding: 18px; display: grid; gap: 18px; }
+.detail-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px 26px; }
+.panel { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.panel p { font-size: 13px; color: var(--muted); }
+.panel .q { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--hot); }
+svg text { fill: var(--muted); font-family: var(--body); font-size: 12px; }
+svg .lbl { fill: var(--ink); font-weight: 600; }
+.note { font-size: 14px; color: var(--muted); max-width: 80ch; }
+.note b { color: var(--ink); }
+
+/* leaderboard */
+.lb-tools { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.lb { display: grid; gap: 8px; }
+.lrow { display: grid; grid-template-columns: 34px auto minmax(0, 1fr) 90px 90px 110px; gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; text-align: left; cursor: pointer; width: 100%; }
+.lrow:hover { border-color: var(--hot); }
+.lrow .pos { font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--hot); }
+.lrow .nm { font-weight: 600; }
+.lrow .v { font-family: var(--display); font-weight: 700; font-size: 22px; }
+.lrow small { display: block; font-size: 12px; color: var(--muted); font-family: var(--body); font-weight: 400; }
+.lhead { display: grid; grid-template-columns: 34px auto minmax(0, 1fr) 90px 90px 110px; gap: 14px; padding: 0 15px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.lhead span:first-child { grid-column: 1 / 4; }
+
+/* directory */
+.toolbar { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto; gap: 10px; align-items: center; margin-bottom: 6px; }
+.toggle { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-weight: 600; font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+.dcard .top { display: flex; gap: 12px; align-items: center; }
+.dcard .top div { min-width: 0; }
+.dcard .nm { font-weight: 600; font-size: 16px; }
+.dcard dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; font-size: 13px; }
+.dcard dt { color: var(--muted); }
+.dcard dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
+.dcard .act { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.more { margin: 18px auto 0; display: block; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 18px; cursor: pointer; font-weight: 600; }
+
+#tip { position: fixed; pointer-events: none; z-index: 20; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 9px; border-radius: 6px; max-width: 260px; opacity: 0; transition: opacity .1s; }
+@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+
+@media (max-width: 900px) {
+  nav { margin-left: 0; width: 100%; }
+  nav button { flex: 1 1 auto; padding: 6px 10px 8px; }
+  nav button span { display: none; }
+  .home-hero { grid-template-columns: minmax(0, 1fr); }
+  .mm { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; }
+  .plist { max-height: 280px; }
+  .chips { margin-left: 0; }
+  .toolbar { grid-template-columns: 1fr 1fr; }
+  .toolbar input[type="search"] { grid-column: 1 / -1; }
+  .hero h1 { font-size: 32px; }
+  .lrow, .lhead { grid-template-columns: 28px auto minmax(0, 1fr) 70px; }
+  .lrow .hide-sm, .lhead .hide-sm { display: none; }
+  .intro { flex-wrap: wrap; }
+  .intro .link { margin-left: 0; }
+}
+</style>
+
+<header>
+  <div class="wrap">
+    <button type="button" class="brand" id="nav-brand" aria-label="Trench Partners home">
+      <svg class="shield" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 1 L28 5 V18 C28 26 21 31 15 33 C9 31 2 26 2 18 V5 Z" fill="#ffffff"/><path d="M15 4 L25.5 7.2 V18 C25.5 24.6 20 28.8 15 30.6 C10 28.8 4.5 24.6 4.5 18 V7.2 Z" fill="#d50a0a"/><path d="M8 13 H22 M8 17 H22 M8 21 H22" stroke="#ffffff" stroke-width="1.6"/></svg>
+      <span><b>Trench Partners</b><small>Who wins together up front · NFL 2021, weeks 1–8</small></span>
+    </button>
+    <nav aria-label="Pages">
+      <button id="nav-home" type="button"><b>How it works</b><span>Start here</span></button>
+      <button id="nav-match" type="button"><b>Teammate Matchmaker</b><span>One player → his best duos &amp; trios</span></button>
+      <button id="nav-leaders" type="button"><b>League Leaderboard</b><span>Best duos &amp; trios in the NFL</span></button>
+      <button id="nav-directory" type="button"><b>Player Directory</b><span>Every player · filter · shortlist</span></button>
+    </nav>
+  </div>
+</header>
+
+<main><div class="wrap">
+  <!-- HOME -->
+  <section id="view-home">
+    <div class="home-hero">
+      <div>
+        <div class="eyebrow">Pass rush &amp; pass protection</div>
+        <h1>Football up front is won in <em>pairs</em> and <em>trios</em>.</h1>
+        <p class="lead">An edge rusher gets home because his partner draws the double team. A guard holds because his center helps. Trench Partners measures which teammates actually win together, using every charted pass play from the first eight weeks of 2021.</p>
+        <p style="margin-top:16px"><button type="button" class="btn" data-goto="match">Open the Teammate Matchmaker →</button></p>
+      </div>
+      <div class="example" id="home-example"></div>
+    </div>
+
+    <div class="block">
+      <h2>Three tools</h2>
+      <div class="tools">
+        <button type="button" class="tool" data-goto="match">
+          <div class="eyebrow">Tool 1</div><h3>Teammate Matchmaker</h3>
+          <div class="who">For coaches and recruiters</div>
+          <p class="muted">Pick one pass rusher or offensive lineman. See the 3 teammates and 2 trios he wins with most, and charts that explain why.</p>
+          <span class="go">Find a player's best partners →</span>
+        </button>
+        <button type="button" class="tool" data-goto="leaders">
+          <div class="eyebrow">Tool 2</div><h3>League Leaderboard</h3>
+          <div class="who">For commentators and analysts</div>
+          <p class="muted">The best rushing and blocking duos and trios across all 32 teams, ranked. Good for storylines and pre-game notes.</p>
+          <span class="go">See the top units →</span>
+        </button>
+        <button type="button" class="tool" data-goto="directory">
+          <div class="eyebrow">Tool 3</div><h3>Player Directory</h3>
+          <div class="who">For recruiters and scouts</div>
+          <p class="muted">All 1,679 players with photo, size, age, college and draft slot. Filter by team or position and build a shortlist.</p>
+          <span class="go">Browse players →</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>How a match is scored</h2>
+      <div class="steps">
+        <div class="step"><h3>Chart every snap</h3><p>On each of 8,557 pass plays, PFF scouts recorded who rushed, who blocked, and who caused or allowed a hurry, hit or sack.</p></div>
+        <div class="step"><h3>Group teammates</h3><p>For every snap we list each pair and trio of teammates who rushed together, or blocked together, on that play.</p></div>
+        <div class="step"><h3>Count wins</h3><p>Rushers win when the defense pressures the QB. Blockers win when the pocket stays clean. We count wins over all their shared snaps.</p></div>
+        <div class="step"><h3>Rank fairly</h3><p>A group needs 30+ snaps together. Small samples are pulled toward the league average, so a lucky handful of plays can't top the list.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Words you'll see</h2>
+      <dl class="gloss">
+        <div><dt>Pressure rate</dt><dd>Share of pass rushes where the defense got a hurry, hit or sack. League average: <b class="num" id="g-rush"></b>.</dd></div>
+        <div><dt>Clean pocket rate</dt><dd>Share of protection snaps with no hurry, hit or sack allowed. League average: <b class="num" id="g-block"></b>.</dd></div>
+        <div><dt>Together vs apart</dt><dd>The group's rate on shared snaps, compared with the same players on snaps without each other. "+12 pts vs apart" means they are 12 points better together.</dd></div>
+        <div><dt>Percentile</dt><dd>Where a player ranks among everyone at his role with 50+ snaps. 90th means better than 90% of them.</dd></div>
+        <div><dt>Alignment</dt><dd>Where a player lined up before the snap: LT/LG/C/RG/RT on the line, LEO/REO for wide edge rushers, DLT/DRT for interior tackles, NT over the center, OLB/ILB for linebackers.</dd></div>
+        <div><dt>Who made the play</dt><dd>On shared snaps that ended in pressure, which member of the group was credited. For blockers, who gave it up.</dd></div>
+      </dl>
+    </div>
+
+    <p class="note" style="margin-top:28px">Data: NFL Big Data Bowl 2023 (Next Gen Stats tracking and PFF scouting, 2021 weeks 1–8). Headshots and draft details: nflverse public roster.</p>
+  </section>
+
+  <!-- MATCHMAKER -->
+  <section id="view-match" hidden>
+    <div class="intro">
+      <div><h2>Teammate Matchmaker</h2>
+      <p>Choose a player on the left. On the right you get his best duos and trios with teammates. Click any duo or trio card to see why they work together.</p></div>
+      <button type="button" class="link" data-goto="home">How is this scored?</button>
+    </div>
+    <div class="mm">
+      <aside class="rail">
+        <div class="rail-top">
+          <label for="q">1. Pick a unit</label>
+          <div class="seg" role="group" aria-label="Unit">
+            <button type="button" id="side-rush" aria-pressed="true">Pass rushers</button>
+            <button type="button" id="side-block" aria-pressed="false">Pass blockers</button>
+          </div>
+          <label for="q">2. Find a player</label>
+          <input type="search" id="q" placeholder="Name or team, e.g. Donald or LA" aria-label="Search players">
+          <span class="muted" style="font-size:12px">Sorted by best duo. % = his best duo's rate.</span>
+        </div>
+        <div class="plist" id="plist" role="listbox" aria-label="Players"></div>
+      </aside>
+      <div id="mm-main"></div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section id="view-leaders" hidden>
+    <div class="intro">
+      <div><h2>League Leaderboard</h2>
+      <p>The ten best teammate groups in the league, minimum 30 snaps together. Click a row to open it in the Matchmaker with its charts.</p></div>
+      <button type="button" class="link" data-goto="home">How is this scored?</button>
+    </div>
+    <div class="lb-tools">
+      <div class="seg" role="group" aria-label="Unit">
+        <button type="button" id="lb-rush" aria-pressed="true">Pass rush</button>
+        <button type="button" id="lb-block" aria-pressed="false">Pass protection</button>
+      </div>
+      <div class="seg" role="group" aria-label="Group size">
+        <button type="button" id="lb-duo" aria-pressed="true">Duos</button>
+        <button type="button" id="lb-trio" aria-pressed="false">Trios</button>
+      </div>
+    </div>
+    <div class="lhead"><span>Group</span><span id="lb-metric">Pressure</span><span class="hide-sm">Snaps</span><span class="hide-sm">Vs apart</span></div>
+    <div class="lb" id="lb"></div>
+  </section>
+
+  <!-- DIRECTORY -->
+  <section id="view-directory" hidden>
+    <div class="intro">
+      <div><h2>Player Directory</h2>
+      <p>Every player tracked in weeks 1–8 of 2021, with physical profile, college, draft slot and 2021 production. Star players to build a shortlist (saved in this browser only).</p></div>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="dq" placeholder="Search name, team or college" aria-label="Search directory">
+      <select id="dpos" aria-label="Position"></select>
+      <select id="dteam" aria-label="Team"></select>
+      <select id="dsort" aria-label="Sort">
+        <option value="name">Sort: name</option>
+        <option value="snaps">Sort: snaps played</option>
+        <option value="press">Sort: pressures created</option>
+        <option value="clean">Sort: fewest pressures allowed</option>
+        <option value="age">Sort: youngest</option>
+      </select>
+      <label class="toggle"><input type="checkbox" id="dstar"> Shortlist only</label>
+    </div>
+    <div class="muted num" id="dcount"></div>
+    <div class="grid" id="dgrid"></div>
+    <button type="button" class="more" id="dmore" hidden>Show more</button>
+  </section>
+</div></main>
+<div id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script src="photos.js"></script>
+<script>
+(function () {
+  const D = window.DATA, PHOTOS = window.PHOTOS || {};
+  const byId = Object.fromEntries(D.players.map(p => [p.id, p]));
+  const pct = (w, n) => n ? w / n : 0;
+  const fmtPct = x => (100 * x).toFixed(0) + "%";
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const SERIES = ["var(--s1)", "var(--s2)", "var(--s3)"];
+  const SIDE = {
+    rush: { role: "Pass Rush", metric: "Pressure rate", verb: "got pressure", unit: "rushes", league: D.league.rush, who: "pass rusher" },
+    block: { role: "Pass Block", metric: "Clean pocket rate", verb: "kept the pocket clean", unit: "protection snaps", league: D.league.block, who: "pass blocker" },
+  };
+  document.getElementById("g-rush").textContent = fmtPct(D.league.rush);
+  document.getElementById("g-block").textContent = fmtPct(D.league.block);
+
+  // ---- shortlist (per-browser convenience) ----
+  let shortlist = new Set();
+  try { shortlist = new Set(JSON.parse(localStorage.getItem("tp-shortlist") || "[]")); } catch (e) {}
+  const saveShort = () => { try { localStorage.setItem("tp-shortlist", JSON.stringify([...shortlist])); } catch (e) {} };
+  const starBtn = id => `<button type="button" class="star" data-star="${id}" aria-pressed="${shortlist.has(id)}">${shortlist.has(id) ? "★ Shortlisted" : "☆ Shortlist"}</button>`;
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-star]");
+    if (b) {
+      e.stopPropagation();
+      const id = b.dataset.star;
+      shortlist.has(id) ? shortlist.delete(id) : shortlist.add(id);
+      saveShort();
+      document.querySelectorAll(`[data-star="${id}"]`).forEach(x => { x.setAttribute("aria-pressed", shortlist.has(id)); x.textContent = shortlist.has(id) ? "★ Shortlisted" : "☆ Shortlist"; });
+      if (view === "directory" && dstar.checked) renderDirectory();
+      return;
+    }
+    const g = e.target.closest("[data-goto]");
+    if (g) { show(g.dataset.goto); window.scrollTo(0, 0); }
+  });
+
+  // ---- helpers ----
+  function photo(id, size) {
+    const p = byId[id], src = PHOTOS[id];
+    const ini = (p?.name || "?").split(" ").map(w => w[0]).slice(0, 2).join("");
+    return `<span class="ph" style="width:${size}px;height:${size}px;font-size:${Math.round(size / 2.6)}px">${src ? `<img src="${src}" alt="" loading="lazy">` : esc(ini)}</span>`;
+  }
+  const height = h => h ? `${Math.floor(h / 12)}′${h % 12}″` : "–";
+  const draftTxt = p => p.draft ? `${p.draft[0]} · Rd ${p.draft[1]}, #${p.draft[2]}${p.draft[3] ? " (" + p.draft[3] + ")" : ""}` : "Undrafted";
+  const last = n => n.split(" ").slice(1).join(" ") || n;
+  const comboRate = c => pct(c.win, c.n);
+  function apartAvg(c) {
+    let w = 0, n = 0;
+    for (const id of c.ids) { w += c.apart[id][0]; n += c.apart[id][1]; }
+    return n ? w / n : null;
+  }
+  const liftOf = c => { const a = apartAvg(c); return a == null ? null : comboRate(c) - a; };
+  const liftChip = (c, kind) => {
+    const l = liftOf(c);
+    return l == null ? "" : `<span class="lift num ${l < 0 ? "neg" : ""}" data-tip="Rate together minus the same players' rate on snaps without this ${kind}">${l >= 0 ? "+" : ""}${(100 * l).toFixed(0)} pts vs apart</span>`;
+  };
+
+  // ---- tooltip ----
+  const tip = document.getElementById("tip");
+  document.addEventListener("mousemove", e => {
+    const t = e.target.closest("[data-tip]");
+    if (!t) { tip.style.opacity = 0; return; }
+    tip.innerHTML = t.dataset.tip;
+    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+    tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; tip.style.opacity = 1;
+  });
+
+  // ---- home example: the league's best rushing duo ----
+  (function () {
+    const c = D.combos[D.leaders.rush.duo[0]], a = apartAvg(c);
+    document.getElementById("home-example").innerHTML = `
+      <div class="eyebrow">Example · best pass-rush duo in the league</div>
+      <div style="display:flex;gap:12px;align-items:center"><span class="stack">${c.ids.map(id => photo(id, 56)).join("")}</span>
+      <div><b>${c.ids.map(id => esc(byId[id].name)).join(" + ")}</b><div class="muted">${esc(c.team)} · ${c.n} rushes together</div></div></div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end">
+        <div><div class="big num" style="color:var(--hot)">${fmtPct(comboRate(c))}</div><div class="muted">pressure rate together</div></div>
+        <div><div class="big num muted">${fmtPct(a)}</div><div class="muted">same players apart</div></div>
+        <div><div class="big num muted">${fmtPct(D.league.rush)}</div><div class="muted">league average</div></div>
+      </div>
+      <button type="button" class="link" id="home-ex-go" style="justify-self:start">See why they work →</button>`;
+    document.getElementById("home-ex-go").onclick = () => openCombo(D.leaders.rush.duo[0]);
+  })();
+
+  // ---- matchmaker ----
+  let side = "rush", selId = "41239", comboId = null, query = "";
+  const plist = document.getElementById("plist"), mmMain = document.getElementById("mm-main");
+  function candidates() {
+    const q = query.trim().toLowerCase();
+    return D.players
+      .filter(p => p.side === side && p.matches?.duo?.length)
+      .filter(p => !q || p.name.toLowerCase().includes(q) || (p.team || "").toLowerCase().includes(q))
+      .map(p => ({ p, best: D.combos[p.matches.duo[0]] }))
+      .sort((a, b) => b.best.score - a.best.score);
+  }
+  function renderList() {
+    const list = candidates();
+    plist.innerHTML = list.length ? list.map(({ p, best }) => `
+      <button type="button" class="prow" role="option" data-pid="${p.id}" aria-selected="${p.id === selId}">
+        ${photo(p.id, 36)}
+        <div><b>${esc(p.name)}</b><span>${esc(p.pos)} · ${esc(p.team)}</span></div>
+        <span class="rate num" data-tip="${SIDE[side].metric} of his best duo">${fmtPct(comboRate(best))}</span>
+      </button>`).join("") : `<p class="muted" style="padding:12px">No ${SIDE[side].who} matches “${esc(query)}”.</p>`;
+  }
+  plist.addEventListener("click", e => {
+    const b = e.target.closest("[data-pid]");
+    if (!b) return;
+    selId = b.dataset.pid; comboId = null; renderList(); renderMain();
+    if (window.innerWidth <= 900) mmMain.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  document.getElementById("q").addEventListener("input", e => { query = e.target.value; renderList(); });
+  function setSide(s) {
+    side = s;
+    document.getElementById("side-rush").setAttribute("aria-pressed", s === "rush");
+    document.getElementById("side-block").setAttribute("aria-pressed", s === "block");
+    const list = candidates();
+    if (!list.some(x => x.p.id === selId) && list.length) { selId = list[0].p.id; comboId = null; }
+    renderList(); renderMain();
+  }
+  document.getElementById("side-rush").onclick = () => setSide("rush");
+  document.getElementById("side-block").onclick = () => setSide("block");
+
+  function openCombo(cid) {
+    const c = D.combos[cid];
+    const owner = c.ids.find(id => { const m = byId[id].matches; return m && [...(m.duo || []), ...(m.trio || [])].includes(cid); }) || c.ids.find(id => byId[id].matches) || c.ids[0];
+    selId = owner; comboId = cid; query = ""; document.getElementById("q").value = "";
+    show("match"); setSide(c.side);
+    setTimeout(() => document.getElementById("detail")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+
+  function keyChips(p) {
+    const n = p.roles[SIDE[p.side].role] || 0;
+    if (p.side === "rush") return [[p.s.pressures, "Pressures"], [p.s.sacks, "Sacks"], [fmtPct(pct(p.s.pressures, n)), "Pressure per rush"], [n, "Rushes"]];
+    return [[p.s.pressuresAllowed, "Pressures allowed"], [p.s.sacksAllowed, "Sacks allowed"], [fmtPct(1 - pct(p.s.pressuresAllowed, n)), "Clean reps"], [n, "Pass-pro snaps"]];
+  }
+
+  function matchCard(cid, i, kind) {
+    const c = D.combos[cid], partners = c.ids.filter(id => id !== selId);
+    return `<button type="button" class="mcard" data-cid="${cid}" aria-pressed="${cid === comboId}">
+      <div class="top"><span class="stack">${[selId, ...partners].map(id => photo(id, 44)).join("")}</span><span class="rank">${kind} #${i + 1}</span></div>
+      <div class="names">with ${partners.map(id => esc(byId[id].name)).join(" &amp; ")}</div>
+      <div class="row"><span class="big num">${fmtPct(comboRate(c))}</span><span class="muted">${SIDE[c.side].metric.toLowerCase()} together</span></div>
+      <div class="row"><span class="muted num">${c.n} ${SIDE[c.side].unit}</span>${liftChip(c, kind.toLowerCase())}</div>
+      <span class="cta">${cid === comboId ? "Showing below ↓" : "Why it works →"}</span>
+    </button>`;
+  }
+
+  function renderMain() {
+    const p = byId[selId];
+    if (!p || !p.matches) { mmMain.innerHTML = `<div class="empty">Pick a player on the left to see who he works best with.</div>`; return; }
+    const duos = p.matches.duo || [], trios = p.matches.trio || [];
+    if (!comboId || !D.combos[comboId]?.ids.includes(selId)) comboId = duos[0] || trios[0];
+    const age = p.age ? `<span><b>${p.age}</b> yrs</span>` : "";
+    const extra = comboId && !duos.includes(comboId) && !trios.includes(comboId);
+    mmMain.innerHTML = `
+      <div class="hero">
+        ${photo(p.id, 96)}
+        <div>
+          <div class="eyebrow">${esc(p.pos)} · ${esc(p.team)} · ${p.side === "rush" ? "Pass rusher" : "Pass blocker"}</div>
+          <h1>${esc(p.name)}</h1>
+          <div class="facts">${age}<span><b>${height(p.ht)}</b>, <b>${p.wt ?? "–"}</b> lb</span><span>${esc(p.college || "–")}</span><span>${esc(draftTxt(p))}</span></div>
+          <div style="margin-top:8px">${starBtn(p.id)}</div>
+        </div>
+        <div class="chips">${keyChips(p).map(([v, l]) => `<div class="chip"><div class="v num">${v}</div><div class="l">${l}</div></div>`).join("")}</div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>His best duos</h2><span class="muted">Teammates he ${SIDE[p.side].verb} with most on the same snap · min ${D.minDuo} snaps</span></div>
+        <div class="cards">${duos.map((c, i) => matchCard(c, i, "Duo")).join("") || `<div class="empty">No partner with ${D.minDuo}+ shared snaps.</div>`}</div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>His best trios</h2><span class="muted">Three-man groups · min ${D.minTrio} snaps</span></div>
+        <div class="cards">${trios.map((c, i) => matchCard(c, i, "Trio")).join("") || `<div class="empty">No trio with ${D.minTrio}+ shared snaps yet.</div>`}</div>
+      </div>
+      ${extra ? `<p class="note" style="margin-top:14px">Opened from the leaderboard. This group is shown below.</p>` : ""}
+      <div id="detail"></div>`;
+    renderDetail();
+  }
+  mmMain.addEventListener("click", e => {
+    const b = e.target.closest("[data-cid]");
+    if (!b) return;
+    comboId = b.dataset.cid;
+    mmMain.querySelectorAll("[data-cid]").forEach(x => {
+      x.setAttribute("aria-pressed", x.dataset.cid === comboId);
+      x.querySelector(".cta").textContent = x.dataset.cid === comboId ? "Showing below ↓" : "Why it works →";
+    });
+    renderDetail();
+    document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // ---- charts ----
+  function barsChart(rows, league, label) {
+    const W = 420, rowH = 34, left = 150, right = 48, H = rows.length * rowH + 30;
+    const x = v => left + v * (W - left - right);
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(label)}">`;
+    [0, .25, .5, .75, 1].forEach(t => {
+      s += `<line x1="${x(t)}" x2="${x(t)}" y1="0" y2="${H - 22}" stroke="var(--line)" stroke-width="1"/>`;
+      s += `<text x="${x(t)}" y="${H - 6}" text-anchor="middle">${t * 100}%</text>`;
+    });
+    rows.forEach((r, i) => {
+      const y = i * rowH + 6, w = Math.max(2, x(r.value) - left);
+      s += `<text class="lbl" x="${left - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`;
+      s += `<rect x="${left}" y="${y + 3}" width="${w}" height="18" rx="4" fill="${r.color}" data-tip="<b>${esc(r.name)}</b><br>${fmtPct(r.value)} on ${r.n} snaps"/>`;
+      s += `<text class="lbl num" x="${left + w + 6}" y="${y + 16}">${fmtPct(r.value)}</text>`;
+    });
+    s += `<line x1="${x(league)}" x2="${x(league)}" y1="0" y2="${H - 22}" stroke="var(--hot)" stroke-width="2" stroke-dasharray="4 3"/>`;
+    return s + `</svg>`;
+  }
+
+  function radarChart(members, role) {
+    const axes = (byId[members[0]].pct?.[role] || []).map(a => a[0]);
+    if (!axes.length) return `<p>Not enough snaps for a percentile profile.</p>`;
+    const W = 380, H = 300, cx = W / 2, cy = 150, R = 105, n = axes.length;
+    const pt = (i, v) => { const a = -Math.PI / 2 + 2 * Math.PI * i / n; return [cx + Math.cos(a) * R * v / 100, cy + Math.sin(a) * R * v / 100]; };
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:420px" role="img" aria-label="Percentile radar">`;
+    [25, 50, 75, 100].forEach(v => s += `<polygon points="${axes.map((_, i) => pt(i, v).join(",")).join(" ")}" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+    axes.forEach((a, i) => {
+      const [x2, y2] = pt(i, 100), [lx, ly] = pt(i, 120);
+      s += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="var(--line)"/>`;
+      s += `<text x="${lx}" y="${ly + 4}" text-anchor="${Math.abs(lx - cx) < 8 ? "middle" : lx > cx ? "start" : "end"}">${esc(a)}</text>`;
+    });
+    s += `<text x="${cx + 3}" y="${cy - R / 2 + 12}">50th</text>`;
+    members.forEach((id, k) => {
+      const vals = byId[id].pct?.[role];
+      if (!vals) return;
+      const pts = vals.map((v, i) => pt(i, v[1]));
+      s += `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="${SERIES[k]}" fill-opacity=".14" stroke="${SERIES[k]}" stroke-width="2"/>`;
+      pts.forEach((p, i) => s += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${SERIES[k]}" stroke="var(--surface)" stroke-width="2" data-tip="<b>${esc(byId[id].name)}</b><br>${esc(vals[i][0])}: ${vals[i][1]}th percentile"/>`);
+    });
+    return s + `</svg>`;
+  }
+
+  // Pre-snap alignment slots: [x across the formation, depth off the ball]
+  const SLOT = {
+    // defense, drawn from behind the defense (its left on the left)
+    LCB: [-9, 1.5], SCBL: [-7, 1.2], SCBoL: [-7.5, 1.2], SCBiL: [-6.5, 1.2], LOLB: [-5.5, .3], LEO: [-4.6, 0], LE: [-3.6, 0],
+    DLT: [-1.8, 0], NLT: [-.8, 0], NT: [0, 0], NRT: [.8, 0], DRT: [1.8, 0], RE: [3.6, 0], REO: [4.6, 0], ROLB: [5.5, .3],
+    SCBR: [7, 1.2], SCBoR: [7.5, 1.2], SCBiR: [6.5, 1.2], RCB: [9, 1.5], LLB: [-3, 2], LILB: [-1.4, 2], MLB: [0, 2.2], RILB: [1.4, 2], RLB: [3, 2],
+    SSL: [-3, 4], SSR: [3, 4], FS: [0, 5],
+    // offense, drawn from behind the QB (its left on the left)
+    LT: [-2.4, 0], LG: [-1.2, 0], C: [0, 0], RG: [1.2, 0], RT: [2.4, 0], "TE-L": [-3.6, 0], "TE-iL": [-3.6, 0], "TE-oL": [-4.2, .2],
+    "TE-R": [3.6, 0], "TE-iR": [3.6, 0], "TE-oR": [4.2, .2], HB: [0, 4], "HB-L": [-1, 3.6], "HB-R": [1, 3.6], FB: [0, 2.6], "FB-L": [-.8, 2.6], "FB-R": [.8, 2.6],
+    LWR: [-8, .3], RWR: [8, .3], SLWR: [-6, .8], SLiWR: [-5.5, .8], SLoWR: [-6.5, .8], SRWR: [6, .8], SRiWR: [5.5, .8], SRoWR: [6.5, .8],
+  };
+  function formationChart(c, members) {
+    // viewer stands behind the group's own unit: own side below the line, opponents above
+    const W = 440, H = 230, mid = W / 2, x = v => mid + v * 21, los = 70;
+    const y = d => los + 18 + d * 22;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Where they line up">`;
+    s += `<rect x="0" y="0" width="${W}" height="${H}" rx="8" fill="var(--field)"/>`;
+    for (let i = 1; i < 8; i++) s += `<line x1="${i * W / 8}" x2="${i * W / 8}" y1="0" y2="${H}" stroke="var(--field-line)" stroke-width="1"/>`;
+    s += `<line x1="0" x2="${W}" y1="${los}" y2="${los}" stroke="var(--hot)" stroke-width="2"/>`;
+    s += `<text x="8" y="${los - 6}" style="font-size:11px">Line of scrimmage</text>`;
+    s += `<ellipse cx="${mid}" cy="${los}" rx="7" ry="4.5" fill="#8a4b22" stroke="var(--surface)" stroke-width="1.5"/>`;
+    // context: the other side's five linemen as hollow marks
+    [-2.4, -1.2, 0, 1.2, 2.4].forEach(v => {
+      s += `<rect x="${x(v) - 7}" y="${los - 23}" width="14" height="14" rx="3" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity=".6"/>`;
+    });
+    s += `<text x="${W - 8}" y="16" text-anchor="end" style="font-size:11px">${c.side === "rush" ? "Offensive line" : "Defensive front"}</text>`;
+    const used = {};
+    members.forEach((id, k) => {
+      const spots = c.spots[id] || [];
+      if (!spots.length) return;
+      const total = spots.reduce((a, b) => a + b[1], 0);
+      const [al, n] = spots[0];
+      const pos = SLOT[al] || [0, 1];
+      const key = al; used[key] = (used[key] || 0) + 1;
+      const cx = x(pos[0]), cy = y(pos[1]) + (used[key] - 1) * 36;
+      const alt = spots.slice(1).map(s => `${s[0]} ${Math.round(100 * s[1] / c.n)}%`).join(", ");
+      s += `<circle cx="${cx}" cy="${cy}" r="11" fill="${SERIES[k]}" stroke="var(--surface)" stroke-width="2" data-tip="<b>${esc(byId[id].name)}</b><br>${esc(al)} on ${Math.round(100 * n / c.n)}% of shared snaps${alt ? "<br>Also: " + esc(alt) : ""}"/>`;
+      s += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:#fff">${esc(al.slice(0, 4))}</text>`;
+      const ly = cy + 26;
+      s += `<text class="lbl" x="${Math.min(W - 40, Math.max(40, cx))}" y="${ly}" text-anchor="middle">${esc(last(byId[id].name))} · ${Math.round(100 * n / c.n)}%</text>`;
+    });
+    return s + `</svg>`;
+  }
+
+  function creditChart(c, members) {
+    const cr = c.credit || {};
+    const segs = [
+      ...members.map((id, k) => ({ name: last(byId[id].name), v: cr[id] || 0, color: SERIES[k] })),
+      { name: "Two or more of them", v: cr.multi || 0, color: "var(--ink)" },
+      { name: c.side === "rush" ? "Another teammate" : "Someone outside the group", v: cr.other || 0, color: "var(--track)", stroke: true },
+    ];
+    const total = segs.reduce((a, b) => a + b.v, 0);
+    if (!total) return `<p>No pressure on their shared snaps.</p>`;
+    const W = 440, H = 40;
+    let x = 0, s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Who made the play">`;
+    segs.forEach(g => {
+      if (!g.v) return;
+      const w = W * g.v / total;
+      s += `<rect x="${x + 1}" y="4" width="${Math.max(1, w - 2)}" height="30" rx="4" fill="${g.color}" ${g.stroke ? 'stroke="var(--muted)" stroke-width="1"' : ""} data-tip="<b>${esc(g.name)}</b><br>${g.v} of ${total} pressure snaps (${fmtPct(g.v / total)})"/>`;
+      if (w > 34) s += `<text x="${x + w / 2}" y="24" text-anchor="middle" style="font-size:12px;font-weight:700;fill:${g.stroke ? "var(--ink)" : "#fff"}">${fmtPct(g.v / total)}</text>`;
+      x += w;
+    });
+    s += `</svg>`;
+    const legend = `<div class="legend">${segs.filter(g => g.v).map(g => `<span><i style="background:${g.color};${g.stroke ? "outline:1px solid var(--muted)" : ""}"></i>${esc(g.name)} <b class="num">${g.v}</b></span>`).join("")}</div>`;
+    return s + legend;
+  }
+
+  function renderDetail() {
+    const el = document.getElementById("detail");
+    const c = D.combos[comboId];
+    if (!el || !c) { if (el) el.innerHTML = ""; return; }
+    const members = [selId, ...c.ids.filter(id => id !== selId)];
+    const S = SIDE[c.side], kind = members.length === 2 ? "duo" : "trio";
+    const together = comboRate(c), lift = liftOf(c);
+    const apartRows = members.map((id, k) => {
+      const [w, n] = c.apart[id];
+      return { name: `${last(byId[id].name)} without`, value: pct(w, n), n, color: SERIES[k] };
+    });
+    const rows = [{ name: "Together", value: together, n: c.n, color: "var(--ink)" }, ...apartRows];
+    const best = c.buckets.filter(b => b[2] >= 8).sort((a, b) => pct(b[1], b[2]) - pct(a[1], a[2]))[0];
+    const pressSnaps = Object.values(c.credit || {}).reduce((a, b) => a + b, 0);
+    el.innerHTML = `<div class="detail">
+      <div class="detail-head">
+        <span class="stack">${members.map(id => photo(id, 56)).join("")}</span>
+        <div><div class="eyebrow">Why this ${kind} works</div><h2>${members.map(id => esc(last(byId[id].name))).join(" + ")}</h2></div>
+        <div class="legend" style="margin-left:auto">${members.map((id, k) => `<span><i style="background:${SERIES[k]}"></i>${esc(byId[id].name)}</span>`).join("")}</div>
+      </div>
+      <p class="note">On <b class="num">${c.n}</b> ${S.unit} together they ${S.verb} <b class="num">${fmtPct(together)}</b> of the time, against a league average of <b class="num">${fmtPct(S.league)}</b>${lift == null ? "" : `, and <b class="num">${lift >= 0 ? "+" : ""}${(100 * lift).toFixed(0)} pts</b> versus the same players apart`}.${best ? ` Their best situation is <b>${esc(best[0])}</b> at <b class="num">${fmtPct(pct(best[1], best[2]))}</b>.` : ""}</p>
+      <div class="panels">
+        <div class="panel"><div class="q">Are they better together?</div><h3>Together vs apart</h3>
+          <p>${S.metric}. The dark bar is the ${kind} on shared snaps. Each colored bar is that player on his snaps without this ${kind}. Red dashed line: league average.</p>
+          ${barsChart(rows, S.league, "Together versus apart")}</div>
+        <div class="panel"><div class="q">How do they fit together?</div><h3>Where they line up</h3>
+          <p>Each player's most common pre-snap spot on their shared snaps, seen from behind the ${c.side === "rush" ? "defense" : "quarterback"}. Hover a dot for his other spots.</p>
+          ${formationChart(c, members)}</div>
+        <div class="panel"><div class="q">${c.side === "rush" ? "Who finishes the play?" : "Who gives it up?"}</div><h3>${c.side === "rush" ? "Who made the pressure" : "Who allowed the pressure"}</h3>
+          <p>On the ${pressSnaps} shared snaps that ended in a hurry, hit or sack, who ${c.side === "rush" ? "PFF credited" : "PFF charged"}. ${c.side === "rush" ? "A big \"another teammate\" share means this group frees up others." : "A big \"outside the group\" share means this group held its own blocks."}</p>
+          ${creditChart(c, members)}</div>
+        <div class="panel"><div class="q">What does each bring?</div><h3>Individual profile</h3>
+          <p>Percentile against every ${S.who} with 50+ snaps. Further out is better.</p>
+          ${radarChart(members, S.role)}</div>
+        <div class="panel"><div class="q">When are they best?</div><h3>By situation</h3>
+          <p>${S.metric} together by down and distance. Red dashed line: league average.</p>
+          ${barsChart(c.buckets.map(([b, w, n]) => ({ name: b, value: pct(w, n), n, color: "var(--accent)" })), S.league, "Rate by situation")}</div>
+      </div>
+    </div>`;
+  }
+
+  // ---- leaderboard ----
+  let lbSide = "rush", lbKind = "duo";
+  function renderLeaders() {
+    ["rush", "block"].forEach(s => document.getElementById("lb-" + s).setAttribute("aria-pressed", s === lbSide));
+    ["duo", "trio"].forEach(k => document.getElementById("lb-" + k).setAttribute("aria-pressed", k === lbKind));
+    document.getElementById("lb-metric").textContent = lbSide === "rush" ? "Pressure" : "Clean pocket";
+    document.getElementById("lb").innerHTML = D.leaders[lbSide][lbKind].map((cid, i) => {
+      const c = D.combos[cid], l = liftOf(c);
+      return `<button type="button" class="lrow" data-open="${cid}">
+        <span class="pos num">${i + 1}</span>
+        <span class="stack">${c.ids.map(id => photo(id, 40)).join("")}</span>
+        <span><span class="nm">${c.ids.map(id => esc(byId[id].name)).join(" · ")}</span><small>${esc(c.team)} · ${c.ids.map(id => esc(byId[id].pos)).join(" / ")}</small></span>
+        <span class="v num">${fmtPct(comboRate(c))}<small>vs ${fmtPct(SIDE[c.side].league)} avg</small></span>
+        <span class="v num hide-sm">${c.n}<small>${SIDE[c.side].unit}</small></span>
+        <span class="hide-sm">${l == null ? "" : `<span class="lift num ${l < 0 ? "neg" : ""}">${l >= 0 ? "+" : ""}${(100 * l).toFixed(0)} pts</span>`}</span>
+      </button>`;
+    }).join("");
+  }
+  document.getElementById("lb").addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (b) openCombo(b.dataset.open); });
+  document.getElementById("lb-rush").onclick = () => { lbSide = "rush"; renderLeaders(); };
+  document.getElementById("lb-block").onclick = () => { lbSide = "block"; renderLeaders(); };
+  document.getElementById("lb-duo").onclick = () => { lbKind = "duo"; renderLeaders(); };
+  document.getElementById("lb-trio").onclick = () => { lbKind = "trio"; renderLeaders(); };
+
+  // ---- directory ----
+  const dq = document.getElementById("dq"), dpos = document.getElementById("dpos"), dteam = document.getElementById("dteam"),
+    dsort = document.getElementById("dsort"), dstar = document.getElementById("dstar"), dgrid = document.getElementById("dgrid"),
+    dcount = document.getElementById("dcount"), dmore = document.getElementById("dmore");
+  const POS = [...new Set(D.players.map(p => p.pos))].sort();
+  const TEAMS = [...new Set(D.players.map(p => p.team).filter(Boolean))].sort();
+  dpos.innerHTML = `<option value="">All positions</option>` + POS.map(p => `<option>${esc(p)}</option>`).join("");
+  dteam.innerHTML = `<option value="">All teams</option>` + TEAMS.map(t => `<option>${esc(t)}</option>`).join("");
+  let limit = 60;
+  function statLine(p) {
+    const r = p.roles["Pass Rush"] || 0, b = p.roles["Pass Block"] || 0;
+    if (p.role === "Pass Rush") return `${p.s.pressures} pressures, ${p.s.sacks} sacks on ${r} rushes`;
+    if (p.role === "Pass Block") return `${p.s.pressuresAllowed} pressures allowed on ${b} pass-pro snaps`;
+    if (p.role === "Coverage") return `${p.roles.Coverage} coverage snaps`;
+    if (p.role === "Pass Route") return `${p.roles["Pass Route"]} routes run`;
+    if (p.role === "Pass") return `${p.roles.Pass} dropbacks`;
+    return "No snaps charted";
+  }
+  function renderDirectory() {
+    const q = dq.value.trim().toLowerCase();
+    const list = D.players.filter(p =>
+      (!q || [p.name, p.team, p.college].some(v => (v || "").toLowerCase().includes(q))) &&
+      (!dpos.value || p.pos === dpos.value) && (!dteam.value || p.team === dteam.value) &&
+      (!dstar.checked || shortlist.has(p.id)));
+    const cmp = {
+      name: (a, b) => last(a.name).localeCompare(last(b.name)),
+      snaps: (a, b) => b.snaps - a.snaps,
+      press: (a, b) => b.s.pressures - a.s.pressures,
+      clean: (a, b) => ((a.roles["Pass Block"] || 0) < 50) - ((b.roles["Pass Block"] || 0) < 50) ||
+        pct(a.s.pressuresAllowed, a.roles["Pass Block"]) - pct(b.s.pressuresAllowed, b.roles["Pass Block"]),
+      age: (a, b) => (a.age ?? 99) - (b.age ?? 99),
+    }[dsort.value];
+    list.sort(cmp);
+    dcount.textContent = `${list.length} player${list.length === 1 ? "" : "s"}${dstar.checked ? " on your shortlist" : ""}`;
+    if (!list.length) {
+      dgrid.innerHTML = `<div class="empty" style="grid-column:1/-1">${dstar.checked ? "Your shortlist is empty. Star players with ☆ Shortlist to add them." : "No player matches these filters."}</div>`;
+      dmore.hidden = true; return;
+    }
+    dgrid.innerHTML = list.slice(0, limit).map(p => `
+      <article class="dcard">
+        <div class="top">${photo(p.id, 56)}<div><div class="nm">${esc(p.name)}</div><div class="muted">${esc(p.pos)} · ${esc(p.team || "–")}</div></div></div>
+        <dl>
+          <dt>Age</dt><dd class="num">${p.age ?? "–"}</dd>
+          <dt>Size</dt><dd class="num">${height(p.ht)}, ${p.wt ?? "–"} lb</dd>
+          <dt>College</dt><dd>${esc(p.college || "–")}${p.conf ? ` <span class="muted">(${esc(p.conf)})</span>` : ""}</dd>
+          <dt>Draft</dt><dd class="num">${esc(draftTxt(p))}</dd>
+          <dt>2021</dt><dd class="num">${esc(statLine(p))}</dd>
+        </dl>
+        <div class="act">${starBtn(p.id)}${p.matches?.duo?.length ? `<button type="button" class="link" data-go="${p.id}">Best teammates →</button>` : `<span class="muted" style="font-size:12px">No teammate data</span>`}</div>
+      </article>`).join("");
+    dmore.hidden = list.length <= limit;
+  }
+  [dq, dpos, dteam, dsort, dstar].forEach(el => el.addEventListener(el.type === "search" ? "input" : "change", () => { limit = 60; renderDirectory(); }));
+  dmore.onclick = () => { limit += 60; renderDirectory(); };
+  dgrid.addEventListener("click", e => {
+    const b = e.target.closest("[data-go]");
+    if (!b) return;
+    const p = byId[b.dataset.go];
+    selId = p.id; comboId = null; query = ""; document.getElementById("q").value = "";
+    show("match"); setSide(p.side); window.scrollTo(0, 0);
+  });
+
+  // ---- views ----
+  const VIEWS = ["home", "match", "leaders", "directory"];
+  let view = "home";
+  function show(v) {
+    view = v;
+    VIEWS.forEach(n => {
+      document.getElementById("view-" + n).hidden = n !== v;
+      document.getElementById("nav-" + n).setAttribute("aria-current", n === v ? "page" : "false");
+    });
+    try { history.replaceState(null, "", "#" + v); } catch (e) {}
+    if (v === "directory") renderDirectory();
+    if (v === "leaders") renderLeaders();
+  }
+  VIEWS.forEach(n => document.getElementById("nav-" + n).onclick = () => { show(n); window.scrollTo(0, 0); });
+  document.getElementById("nav-brand").onclick = () => { show("home"); window.scrollTo(0, 0); };
+
+  renderList(); renderMain();
+  const start = location.hash.slice(1);
+  show(VIEWS.includes(start) ? start : "home");
+})();
+</script>
