@@ -9,6 +9,8 @@ Four pages:
 - **League Leaderboard**: the best duos and trios in the league
 - **Player Directory**: every player with photo, size, college and draft slot, plus a shortlist
 
+You can find it at https://trench-partners.vercel.app/
+
 ## Run it locally
 
 From the project folder:
